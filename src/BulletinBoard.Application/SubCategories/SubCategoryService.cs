@@ -10,9 +10,13 @@ public class SubCategoryService : ISubCategoryService
 		_repository = repository;
 	}
 
-	public async Task<IEnumerable<SubCategory>> ListAsync()
+	public async Task<IEnumerable<SubCategory>> ListAsync(int? categoryId = null)
 	{
-		return await _repository.ListAsync();
+		IEnumerable<SubCategory> subCategories = categoryId.HasValue
+			? await _repository.ListByCategoryAsync(categoryId.Value)
+			: await _repository.ListAsync();
+
+		return subCategories;
 	}
 
 	public async Task<SubCategory?> GetByIdAsync(int id)
