@@ -1,15 +1,10 @@
-﻿namespace BulletinBoard.Domain.Entities;
-public class Announcement
+﻿namespace BulletinBoard.Application.Announcements;
+public class AnnouncementUpdateModel
 {
 	public Guid Id { get; set; }
 	public string Title { get; set; }
 	public string Description { get; set; }
-	public DateTime CreatedDate { get; set; }
 	public bool Status { get; set; }
-
 	public int CategoryId { get; set; }
 	public int? SubCategoryId { get; set; }
-
-	public Category Category { get; set; }
-	public SubCategory SubCategory { get; set; }
 }
