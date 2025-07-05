@@ -10,13 +10,15 @@ public class SubCategoriesController : ControllerBase
 	private readonly ISubCategoryService _service;
 
 	public SubCategoriesController(ISubCategoryService service)
-		=> _service = service;
+	{
+		_service = service;
+	}
 
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<SubCategory>>> GetAll()
+	public async Task<ActionResult<IEnumerable<SubCategory>>> GetAll([FromQuery] int? categoryId)
 	{
-		var subCategories = await _service.ListAsync();
-		return Ok(subCategories);
+		var list = await _service.ListAsync(categoryId);
+		return Ok(list);
 	}
 
 	[HttpGet("{id:int}")]

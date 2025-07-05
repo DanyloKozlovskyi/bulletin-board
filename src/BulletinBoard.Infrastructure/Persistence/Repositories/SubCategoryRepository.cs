@@ -29,4 +29,11 @@ public class SubCategoryRepository : ISubCategoryRepository
 			 new { Id = id },
 			 commandType: CommandType.StoredProcedure);
 	}
+	public Task<IEnumerable<SubCategory>> ListByCategoryAsync(int categoryId)
+	{
+		return _db.QueryAsync<SubCategory>(
+			 "dbo.sp_ListSubCategoriesByCategory",
+			 new { CategoryId = categoryId },
+			 commandType: CommandType.StoredProcedure);
+	}
 }
