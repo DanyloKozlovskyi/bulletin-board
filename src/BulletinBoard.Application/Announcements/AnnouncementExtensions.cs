@@ -1,7 +1,7 @@
 ﻿using BulletinBoard.Domain.Entities;
 
 namespace BulletinBoard.Application.Announcements;
-public static class AnnouncementExtension
+public static class AnnouncementExtensions
 {
 	public static Announcement ToAnnouncement(this AnnouncementCreateModel model)
 	{
