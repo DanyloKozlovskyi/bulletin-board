@@ -1,4 +1,4 @@
-﻿namespace BulletinBoard.Ui.Models;
+﻿namespace BulletinBoard.Ui.Models.Announcements;
 public static class AnnouncementExtensions
 {
 	public static AnnouncementUpdateViewModel ToUpdateModel(this AnnouncementViewModel model)

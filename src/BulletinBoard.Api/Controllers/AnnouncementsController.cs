@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace BulletinBoard.Api.Controllers;
 [ApiController]
 [Route("[controller]")]
-public class AnnouncementController : ControllerBase
+public class AnnouncementsController : ControllerBase
 {
 	private readonly IAnnouncementService _service;
 
-	public AnnouncementController(IAnnouncementService service)
+	public AnnouncementsController(IAnnouncementService service)
 	{
 		_service = service;
 	}
