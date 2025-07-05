@@ -36,13 +36,15 @@ public class AnnouncementRepository : IAnnouncementRepository
 			"dbo.sp_CreateAnnouncement",
 			new
 			{
-				entity.Title,
-				entity.Description,
-				entity.Status,
-				entity.Category,
-				entity.SubCategory
+				Id = entity.Id,
+				Title = entity.Title,
+				Description = entity.Description,
+				Status = entity.Status,
+				CategoryId = entity.CategoryId,
+				SubCategoryId = entity.SubCategoryId
 			},
 			commandType: CommandType.StoredProcedure);
+
 		return newId;
 	}
 
@@ -52,12 +54,12 @@ public class AnnouncementRepository : IAnnouncementRepository
 			"dbo.sp_UpdateAnnouncement",
 			new
 			{
-				entity.Id,
-				entity.Title,
-				entity.Description,
-				entity.Status,
-				entity.Category,
-				entity.SubCategory
+				Id = entity.Id,
+				Title = entity.Title,
+				Description = entity.Description,
+				Status = entity.Status,
+				CategoryId = entity.CategoryId,
+				SubCategoryId = entity.SubCategoryId
 			},
 			commandType: CommandType.StoredProcedure);
 	}

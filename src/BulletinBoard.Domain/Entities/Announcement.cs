@@ -6,6 +6,10 @@ public class Announcement
 	public string Description { get; set; }
 	public DateTime CreatedDate { get; set; }
 	public bool Status { get; set; }
-	public string Category { get; set; }
-	public string SubCategory { get; set; }
+
+	public int CategoryId { get; set; }
+	public int? SubCategoryId { get; set; }
+
+	public Category Category { get; set; }
+	public SubCategory SubCategory { get; set; }
 }

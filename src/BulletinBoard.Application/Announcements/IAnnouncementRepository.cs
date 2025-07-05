@@ -1,5 +1,4 @@
 ﻿using BulletinBoard.Domain.Entities;
-using System.Data;
 
 namespace BulletinBoard.Application.Announcements;
 public interface IAnnouncementRepository
