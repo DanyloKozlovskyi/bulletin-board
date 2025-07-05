@@ -7,6 +7,6 @@ public class AnnouncementIndexViewModel
 	public IList<SelectListItem> SubCategories { get; set; } = new List<SelectListItem>();
 	public IList<AnnouncementViewModel> Announcements { get; set; } = new List<AnnouncementViewModel>();
 
-	public int? SelectedCategoryId { get; set; }
-	public int? SelectedSubCategoryId { get; set; }
+	public int? CategoryId { get; set; }
+	public int? SubCategoryId { get; set; }
 }

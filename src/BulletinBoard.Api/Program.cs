@@ -1,5 +1,6 @@
 using BulletinBoard.Application.Announcements;
 using BulletinBoard.Application.Categories;
+using BulletinBoard.Application.SubCategories;
 using BulletinBoard.Infrastructure.Persistence.Repositories;
 using Microsoft.OpenApi.Models;
 
@@ -7,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+builder.Services.AddScoped<ISubCategoryRepository, SubCategoryRepository>();
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
 builder.Services.AddScoped<IAnnouncementService, AnnouncementService>();

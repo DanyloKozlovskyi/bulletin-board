@@ -49,8 +49,8 @@ public class AnnouncementsController : Controller
 			Announcements = announcements,
 			Categories = categoryItems,
 			SubCategories = subcategoryItems,
-			SelectedCategoryId = categoryId,
-			SelectedSubCategoryId = subCategoryId
+			CategoryId = categoryId,
+			SubCategoryId = subCategoryId
 		};
 
 		return View(vm);
