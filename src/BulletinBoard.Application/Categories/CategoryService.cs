@@ -18,6 +18,6 @@ public class CategoryService : ICategoryService
 	public async Task<Category?> GetByIdAsync(int id)
 	{
 		var c = await _repository.GetByIdAsync(id);
-		return c is null ? null : new Category() { Id = c.Id, Name = c.Name };
+		return c;
 	}
 }
