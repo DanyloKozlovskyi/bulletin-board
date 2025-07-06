@@ -1,29 +1,33 @@
-﻿using BulletinBoard.Ui.Models.Announcements;
-using BulletinBoard.Ui.Models.Announcements.ActionModels;
-using BulletinBoard.Ui.Models.Categories;
-using BulletinBoard.Ui.Models.SubCategories;
+﻿using BulletinBoard.Ui.Features.Announcements.Models;
+using BulletinBoard.Ui.Features.Announcements.Models.ActionModels;
+using BulletinBoard.Ui.Features.Categories;
+using BulletinBoard.Ui.Features.SubCategories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BulletinBoard.Ui.Controllers;
+namespace BulletinBoard.Ui.Features.Announcements;
 public class AnnouncementsController : Controller
 {
 	private readonly HttpClient _client;
+	private readonly IAnnouncementService _service;
 
-	public AnnouncementsController(IHttpClientFactory http)
+	public AnnouncementsController(IHttpClientFactory http, IAnnouncementService service)
 	{
+		_service = service;
 		_client = http.CreateClient("BulletinBoardApi");
 	}
 
 	public async Task<IActionResult> Index(int? categoryId, int? subCategoryId)
 	{
-		var query = new List<string>();
-		if (categoryId.HasValue) query.Add($"categoryId={categoryId}");
-		if (subCategoryId.HasValue) query.Add($"subCategoryId={subCategoryId}");
-		var url = "announcements"
-				  + (query.Any() ? "?" + string.Join("&", query) : "");
-		var announcements = await _client.GetFromJsonAsync<List<AnnouncementViewModel>>(url)
-							   ?? new List<AnnouncementViewModel>();
+		//var query = new List<string>();
+		//if (categoryId.HasValue) query.Add($"categoryId={categoryId}");
+		//if (subCategoryId.HasValue) query.Add($"subCategoryId={subCategoryId}");
+		//var url = "announcements"
+		//		  + (query.Any() ? "?" + string.Join("&", query) : "");
+		//var announcements = await _client.GetFromJsonAsync<List<Announcement>>(url)
+		//					   ?? new List<Announcement>();
+		var announcements = await _service.ListAsync(categoryId, subCategoryId);
+
 
 		var categories = await _client.GetFromJsonAsync<List<CategoryViewModel>>("categories")
 						  ?? new List<CategoryViewModel>();
@@ -58,28 +62,28 @@ public class AnnouncementsController : Controller
 
 	public async Task<IActionResult> Details(Guid id)
 	{
-		var vm = await _client.GetFromJsonAsync<AnnouncementViewModel>($"announcements/{id}");
+		var vm = await _service.GetByIdAsync(id);
 		if (vm == null) return NotFound();
 		return View(vm);
 	}
 
 	[HttpGet]
-	public IActionResult Create() => View(new AnnouncementCreateViewModel());
+	public IActionResult Create() => View(new AnnouncementCreateModel());
 
 	[HttpPost]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> Create(AnnouncementCreateViewModel m)
+	public async Task<IActionResult> Create(AnnouncementCreateModel m)
 	{
 		if (!ModelState.IsValid) return View(m);
 
-		await _client.PostAsJsonAsync("announcements", m);
+		await _service.CreateAsync(m);
 		return RedirectToAction(nameof(Index));
 	}
 
 	[HttpGet]
 	public async Task<IActionResult> Edit(Guid id)
 	{
-		var existing = await _client.GetFromJsonAsync<AnnouncementViewModel>($"announcements/{id}");
+		var existing = await _service.GetByIdAsync(id);
 		if (existing == null) return NotFound();
 
 		var vm = existing.ToUpdateModel();
@@ -89,18 +93,18 @@ public class AnnouncementsController : Controller
 
 	[HttpPost]
 	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> Edit(AnnouncementUpdateViewModel m)
+	public async Task<IActionResult> Edit(AnnouncementUpdateModel m)
 	{
 		if (!ModelState.IsValid) return View(m);
 
-		await _client.PutAsJsonAsync($"announcements/{m.Id}", m);
+		await _service.UpdateAsync(m);
 		return RedirectToAction(nameof(Index));
 	}
 
 	[HttpGet]
 	public async Task<IActionResult> Delete(Guid id)
 	{
-		var vm = await _client.GetFromJsonAsync<AnnouncementViewModel>($"announcements/{id}");
+		var vm = await _service.GetByIdAsync(id);
 		if (vm == null) return NotFound();
 		return View(vm);
 	}
@@ -109,7 +113,7 @@ public class AnnouncementsController : Controller
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteConfirmed(Guid id)
 	{
-		await _client.DeleteAsync($"announcements/{id}");
+		await _service.DeleteAsync(id);
 		return RedirectToAction(nameof(Index));
 	}
 }

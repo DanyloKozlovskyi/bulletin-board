@@ -1,4 +1,4 @@
-﻿namespace BulletinBoard.Ui.Models.Categories;
+﻿namespace BulletinBoard.Ui.Features.Categories;
 public class CategoryViewModel
 {
 	public int Id { get; set; }
