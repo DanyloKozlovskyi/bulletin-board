@@ -3,28 +3,37 @@
 
 @{
     ViewData["Title"] = "Announcements";
+
+    ViewBag.Categories = Model.Categories;
+    ViewBag.SubCategories = Model.SubCategories;
 }
 
 <h1>@ViewData["Title"]</h1>
+
+<!-- Button to trigger Create Modal -->
+<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">
+    Create New Announcement
+</button>
 
 <form asp-action="Index" method="get" class="form-inline mb-3">
     <div class="form-group mr-2">
         <label asp-for="CategoryId" class="mr-1">Category</label>
         <select asp-for="CategoryId"
                 asp-items="Model.Categories"
+                asp-option-label="All Categories"
                 class="form-control"
                 onchange="this.form.submit()">
-            <option value="">All Categories</option>
         </select>
     </div>
     <div class="form-group mr-2">
         <label asp-for="SubCategoryId" class="mr-1">SubCategory</label>
         <select asp-for="SubCategoryId"
                 asp-items="Model.SubCategories"
+                asp-option-label="All SubCategories"
                 class="form-control"
                 onchange="this.form.submit()">
-            <option value="">All SubCategories</option>
         </select>
+
     </div>
 </form>
 
@@ -48,10 +57,67 @@
                 <td>@a.CreatedDate:yyyy-MM-dd</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-info">View</a>
-                    <a asp-action="Edit" asp-route-id="@a.Id" class="btn btn-sm btn-primary">Edit</a>
+                    <!-- Trigger Edit Modal -->
+                    <button type="button"
+                            class="btn btn-sm btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editModal"
+                            data-url="@Url.Action("Edit", new { id = a.Id })">
+                        Edit
+                    </button>
                     <a asp-action="Delete" asp-route-id="@a.Id" class="btn btn-sm btn-danger">Delete</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Announcement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    @await Html.PartialAsync("_AnnouncementForm", new AnnouncementCreateModel())
+                    <div class="mt-3 text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Announcement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Content will be loaded via AJAX -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Load Edit form into modal body when opened (Bootstrap 5)
+        var editModalEl = document.getElementById('editModal');
+        editModalEl.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var url = button.getAttribute('data-url');
+            var modalBody = editModalEl.querySelector('.modal-body');
+            fetch(url)
+                .then(response => response.text())
+                .then(html => modalBody.innerHTML = html);
+        });
+    </script>
+}

@@ -56,13 +56,21 @@ public class AnnouncementsController : Controller
 	}
 
 	[HttpGet]
-	public IActionResult Create() => View(new AnnouncementCreateModel());
+	public async Task<IActionResult> Create()
+	{
+		await PopulateCategoriesAsync();
+		return View(new AnnouncementCreateModel());
+	}
 
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Create(AnnouncementCreateModel m)
 	{
-		if (!ModelState.IsValid) return View(m);
+		if (!ModelState.IsValid)
+		{
+			await PopulateCategoriesAsync(m.CategoryId);
+			return View(m);
+		}
 
 		await _service.CreateAsync(m);
 		return RedirectToAction(nameof(Index));
@@ -74,8 +82,16 @@ public class AnnouncementsController : Controller
 		var existing = await _service.GetByIdAsync(id);
 		if (existing == null) return NotFound();
 
-		var vm = existing.ToUpdateModel();
+		var vm = new AnnouncementUpdateModel
+		{
+			Id = existing.Id,
+			Title = existing.Title,
+			Description = existing.Description,
+			CategoryId = existing.CategoryId,
+			SubCategoryId = existing.SubCategoryId
+		};
 
+		await PopulateCategoriesAsync(vm.CategoryId);
 		return View(vm);
 	}
 
@@ -83,7 +99,11 @@ public class AnnouncementsController : Controller
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Edit(AnnouncementUpdateModel m)
 	{
-		if (!ModelState.IsValid) return View(m);
+		if (!ModelState.IsValid)
+		{
+			await PopulateCategoriesAsync(m.CategoryId);
+			return View(m);
+		}
 
 		await _service.UpdateAsync(m);
 		return RedirectToAction(nameof(Index));
@@ -103,5 +123,20 @@ public class AnnouncementsController : Controller
 	{
 		await _service.DeleteAsync(id);
 		return RedirectToAction(nameof(Index));
+	}
+
+	private async Task PopulateCategoriesAsync(int? categoryId = null)
+	{
+		var cats = await _categoryService.GetAllAsync();
+		ViewBag.Categories = cats
+			.Select(c => new SelectListItem(c.Name, c.Id.ToString()))
+			.Prepend(new SelectListItem("All Categories", ""))
+			.ToList();
+
+		var subs = await _subCategoryService.GetAllAsync(categoryId);
+		ViewBag.SubCategories = subs
+			.Select(s => new SelectListItem(s.Name, s.Id.ToString()))
+			.Prepend(new SelectListItem("All SubCategories", ""))
+			.ToList();
 	}
 }

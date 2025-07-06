@@ -1,0 +1,36 @@
+﻿@model AnnouncementCreateModel
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<div class="form-group mb-3">
+    @Html.LabelFor(m => m.Title)
+    @Html.TextBoxFor(m => m.Title, new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+</div>
+
+<div class="form-group mb-3">
+    @Html.LabelFor(m => m.Description)
+    @Html.TextAreaFor(m => m.Description, 5, 0, new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
+</div>
+
+<div class="form-group mb-3">
+    @Html.LabelFor(m => m.CategoryId, "Category")
+    @Html.DropDownListFor(
+    m => m.CategoryId,
+        (IEnumerable<SelectListItem>)ViewBag.Categories,
+        "Select Category",
+        new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
+</div>
+
+<div class="form-group mb-3">
+    @Html.LabelFor(m => m.SubCategoryId, "SubCategory")
+    @Html.DropDownListFor(
+        m => m.SubCategoryId,
+        (IEnumerable<SelectListItem>)ViewBag.SubCategories,
+        "Select SubCategory",
+        new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.SubCategoryId, "", new { @class = "text-danger" })
+</div>
+
