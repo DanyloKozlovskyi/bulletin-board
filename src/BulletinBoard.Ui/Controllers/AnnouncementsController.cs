@@ -1,36 +1,32 @@
-﻿using BulletinBoard.Ui.Features.Announcements.Models;
+﻿using BulletinBoard.Ui.Features.Announcements;
+using BulletinBoard.Ui.Features.Announcements.Models;
 using BulletinBoard.Ui.Features.Announcements.Models.ActionModels;
 using BulletinBoard.Ui.Features.Categories;
 using BulletinBoard.Ui.Features.SubCategories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BulletinBoard.Ui.Features.Announcements;
+namespace BulletinBoard.Ui.Controllers;
 public class AnnouncementsController : Controller
 {
 	private readonly HttpClient _client;
 	private readonly IAnnouncementService _service;
+	private readonly ICategoryService _categoryService;
 
-	public AnnouncementsController(IHttpClientFactory http, IAnnouncementService service)
+	public AnnouncementsController(IHttpClientFactory http, IAnnouncementService service, ICategoryService categoryService)
 	{
 		_service = service;
+		_categoryService = categoryService;
 		_client = http.CreateClient("BulletinBoardApi");
 	}
 
 	public async Task<IActionResult> Index(int? categoryId, int? subCategoryId)
 	{
-		//var query = new List<string>();
-		//if (categoryId.HasValue) query.Add($"categoryId={categoryId}");
-		//if (subCategoryId.HasValue) query.Add($"subCategoryId={subCategoryId}");
-		//var url = "announcements"
-		//		  + (query.Any() ? "?" + string.Join("&", query) : "");
-		//var announcements = await _client.GetFromJsonAsync<List<Announcement>>(url)
-		//					   ?? new List<Announcement>();
 		var announcements = await _service.ListAsync(categoryId, subCategoryId);
 
-
-		var categories = await _client.GetFromJsonAsync<List<CategoryViewModel>>("categories")
-						  ?? new List<CategoryViewModel>();
+		//var categories = await _client.GetFromJsonAsync<List<Category>>("categories")
+		//				  ?? new List<Category>();
+		var categories = await _categoryService.GetAllAsync();
 		var categoryItems = categories
 			.Select(c => new SelectListItem(c.Name, c.Id.ToString()))
 			.Prepend(new SelectListItem("All Categories", ""))
