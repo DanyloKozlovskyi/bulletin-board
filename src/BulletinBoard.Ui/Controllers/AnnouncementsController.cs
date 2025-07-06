@@ -76,7 +76,7 @@ public class AnnouncementsController : Controller
 	public async Task<IActionResult> Create()
 	{
 		await PopulateFormListsAsync();
-		return View(new AnnouncementCreateModel());
+		return PartialView("_AnnouncementCreateForm", new AnnouncementCreateModel());
 	}
 
 	[HttpPost]
