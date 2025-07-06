@@ -1,13 +1,9 @@
 using BulletinBoard.Ui.Features.Announcements;
 using BulletinBoard.Ui.Features.Announcements.Adapters;
 using BulletinBoard.Ui.Features.Categories;
+using BulletinBoard.Ui.Features.SubCategories;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddHttpClient("BulletinBoardApi", client =>
-{
-	client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
-});
 
 builder.Services.AddHttpClient<IAnnouncementAdapter, AnnouncementHttpAdapter>(c =>
 {
@@ -20,6 +16,12 @@ builder.Services.AddHttpClient<ICategoryAdapter, CategoryHttpAdapter>(client =>
 	client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
 });
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+builder.Services.AddHttpClient<ISubCategoryAdapter, SubCategoryHttpAdapter>(client =>
+{
+	client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+});
+builder.Services.AddScoped<ISubCategoryService, SubCategoryService>();
 
 builder.Services.AddControllersWithViews();
 
