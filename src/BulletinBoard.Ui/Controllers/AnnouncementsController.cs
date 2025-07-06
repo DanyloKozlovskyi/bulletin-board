@@ -100,7 +100,7 @@ public class AnnouncementsController : Controller
 
 		var vm = existing.ToUpdateModel();
 		await PopulateFormListsAsync(vm.CategoryId);
-		return View(vm);
+		return PartialView("_AnnouncementEditForm", vm);
 	}
 
 	[HttpPost]

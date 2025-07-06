@@ -96,10 +96,6 @@
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Announcement</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
                 <!-- Content will be loaded via AJAX -->
             </div>
@@ -190,6 +186,57 @@
           // initial check
           validate();
         });
+    </script>
+    <script>
+        // 1. Grab the modal element
+        var editModalEl = document.getElementById('editModal');
+
+        // 2. On show, load the partial then initialize the form
+        editModalEl.addEventListener('show.bs.modal', function (event) {
+          var url       = event.relatedTarget.getAttribute('data-url');
+          var modalBody = editModalEl.querySelector('.modal-body');
+
+          fetch(url)
+            .then(r => r.ok ? r.text() : Promise.reject(r))
+            .then(html => {
+              modalBody.innerHTML = html;
+              initEditForm();       // <— call our setup function here
+            })
+            .catch(err => console.error(err));
+        });
+
+        // 3. Define that setup function
+        function initEditForm() {
+          // scope to the form that just got injected
+          var form     = editModalEl.querySelector('form');
+          if (!form) return;
+
+          var btn      = form.querySelector('button[type="submit"]');
+          var titleEl  = form.querySelector('[name="Title"]');
+          var descEl   = form.querySelector('[name="Description"]');
+          var catEl    = form.querySelector('[name="CategoryId"]');
+          var subEl    = form.querySelector('[name="SubCategoryId"]');
+
+          if (!btn || !titleEl || !descEl || !catEl || !subEl) {
+            console.error('Edit form init failed', { btn, titleEl, descEl, catEl, subEl });
+            return;
+          }
+
+          function validate() {
+            var okTitle = titleEl.value.trim().length > 0;
+            var okDesc  = descEl.value.trim().length  > 0;
+            var okCat   = !!catEl.value;
+            var okSub   = !!subEl.value;
+            btn.disabled = !(okTitle && okDesc && okCat && okSub);
+          }
+
+          titleEl .addEventListener('input',  validate);
+          descEl  .addEventListener('input',  validate);
+          catEl   .addEventListener('change', validate);
+          subEl   .addEventListener('change',validate);
+
+          validate();
+        }
     </script>
 }
 
