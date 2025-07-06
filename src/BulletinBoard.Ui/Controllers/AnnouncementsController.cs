@@ -9,37 +9,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace BulletinBoard.Ui.Controllers;
 public class AnnouncementsController : Controller
 {
-	private readonly HttpClient _client;
 	private readonly IAnnouncementService _service;
 	private readonly ICategoryService _categoryService;
+	private readonly ISubCategoryService _subCategoryService;
 
-	public AnnouncementsController(IHttpClientFactory http, IAnnouncementService service, ICategoryService categoryService)
+	public AnnouncementsController(IHttpClientFactory http, IAnnouncementService service, ICategoryService categoryService, ISubCategoryService subCategoryService)
 	{
 		_service = service;
 		_categoryService = categoryService;
-		_client = http.CreateClient("BulletinBoardApi");
+		_subCategoryService = subCategoryService;
 	}
 
 	public async Task<IActionResult> Index(int? categoryId, int? subCategoryId)
 	{
 		var announcements = await _service.ListAsync(categoryId, subCategoryId);
 
-		//var categories = await _client.GetFromJsonAsync<List<Category>>("categories")
-		//				  ?? new List<Category>();
 		var categories = await _categoryService.GetAllAsync();
 		var categoryItems = categories
 			.Select(c => new SelectListItem(c.Name, c.Id.ToString()))
 			.Prepend(new SelectListItem("All Categories", ""))
 			.ToList();
 
-		List<SubCategoryViewModel> subcategories = new();
-		if (categoryId.HasValue)
-		{
-			subcategories = await _client
-				.GetFromJsonAsync<List<SubCategoryViewModel>>($"subcategories?categoryId={categoryId}")
-				?? new List<SubCategoryViewModel>();
-		}
-		var subcategoryItems = subcategories
+		var subCategories = await _subCategoryService.GetAllAsync(categoryId);
+		var subcategoryItems = subCategories
 			.Select(s => new SelectListItem(s.Name, s.Id.ToString()))
 			.Prepend(new SelectListItem("All SubCategories", ""))
 			.ToList();
