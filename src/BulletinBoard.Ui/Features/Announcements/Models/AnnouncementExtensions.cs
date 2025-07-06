@@ -1,9 +1,9 @@
-﻿namespace BulletinBoard.Ui.Models.Announcements;
+﻿namespace BulletinBoard.Ui.Features.Announcements.Models;
 public static class AnnouncementExtensions
 {
-	public static AnnouncementUpdateViewModel ToUpdateModel(this AnnouncementViewModel model)
+	public static AnnouncementUpdateModel ToUpdateModel(this Announcement model)
 	{
-		return new AnnouncementUpdateViewModel
+		return new AnnouncementUpdateModel
 		{
 			Id = model.Id,
 			Title = model.Title,

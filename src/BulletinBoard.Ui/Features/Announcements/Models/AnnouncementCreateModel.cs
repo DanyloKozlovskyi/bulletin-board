@@ -1,6 +1,6 @@
-﻿namespace BulletinBoard.Ui.Models.Announcements;
+﻿namespace BulletinBoard.Ui.Features.Announcements.Models;
 
-public class AnnouncementCreateViewModel
+public class AnnouncementCreateModel
 {
 	public string Title { get; set; }
 	public string Description { get; set; }

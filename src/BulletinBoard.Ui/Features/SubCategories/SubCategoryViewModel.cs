@@ -1,4 +1,4 @@
-﻿namespace BulletinBoard.Ui.Models.SubCategories;
+﻿namespace BulletinBoard.Ui.Features.SubCategories;
 public class SubCategoryViewModel
 {
 	public int Id { get; set; }

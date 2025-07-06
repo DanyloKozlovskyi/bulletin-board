@@ -1,5 +1,5 @@
-﻿namespace BulletinBoard.Ui.Models.Announcements;
-public class AnnouncementViewModel
+﻿namespace BulletinBoard.Ui.Features.Announcements.Models;
+public class Announcement
 {
 	public Guid Id { get; set; }
 	public string Title { get; set; }
