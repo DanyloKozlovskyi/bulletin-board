@@ -85,7 +85,7 @@
                     @await Html.PartialAsync("_AnnouncementForm", new AnnouncementCreateModel())
                     <div class="mt-3 text-end">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" id="createAnnouncementFormBtn" class="btn btn-primary" disabled>Create</button>
                     </div>
                 </form>
             </div>
@@ -120,4 +120,76 @@
                 .then(html => modalBody.innerHTML = html);
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('index script executed');
+          var categorySelect    = document.getElementById('CategorySelect');
+          var subCategorySelect = document.getElementById('SubCategorySelect');
+          var subcatsBaseUrl    = '@Url.Action("GetByCategory", "SubCategoriesApi")';
+
+          // A reusable function that (re)builds the subcategory dropdown
+          function rebuildSubcats(catId) {
+            // clear & add the placeholder
+            subCategorySelect.innerHTML = '';
+            subCategorySelect.add(new Option('-- Select a SubCategory --', ''));
+
+            if (!catId) {
+              // no real category chosen → stay disabled
+              subCategorySelect.disabled = true;
+              return;
+            }
+
+            // enable & fetch real subcategories
+            subCategorySelect.disabled = false;
+            fetch(`${subcatsBaseUrl}?categoryId=${encodeURIComponent(catId)}`)
+              .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
+              .then(list => {
+                list.forEach(s => {
+                  var val  = s.id   ?? s.Id;
+                  var text = s.name ?? s.Name;
+                  subCategorySelect.add(new Option(text, val));
+                });
+              })
+              .catch(err => console.error('Failed to load subcategories:', err));
+          }
+
+          rebuildSubcats(categorySelect.value);
+
+          categorySelect.addEventListener('change', function() {
+            rebuildSubcats(this.value);
+          });
+        });
+    </script>
+    <script>
+        var createModalEl = document.getElementById('createModal');
+        createModalEl.addEventListener('shown.bs.modal', function() {
+          // grab references
+          var btn       = document.getElementById('createAnnouncementFormBtn');
+          var titleEl   = document.getElementById('Title');
+          var descEl    = document.getElementById('Description');
+          var catEl     = document.getElementById('CategorySelect');
+          var subcatEl  = document.getElementById('SubCategorySelect');
+
+          function validate() {
+            // trim to avoid only-spaces
+            var hasTitle   = titleEl.value.trim().length > 0;
+            var hasDesc    = descEl.value.trim().length > 0;
+            var hasCat     = catEl.value && catEl.value !== '';
+            var hasSubcat  = subcatEl.value && subcatEl.value !== '';
+
+            btn.disabled = !(hasTitle && hasDesc && hasCat && hasSubcat);
+          }
+          console.log('create script executed');
+
+          // wire up events
+          titleEl.addEventListener('input',  validate);
+          descEl.addEventListener('input',   validate);
+          catEl.addEventListener('change',    validate);
+          subcatEl.addEventListener('change', validate);
+
+          // initial check
+          validate();
+        });
+    </script>
 }
+

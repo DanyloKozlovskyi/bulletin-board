@@ -18,9 +18,9 @@
     @Html.LabelFor(m => m.CategoryId, "Category")
     @Html.DropDownListFor(
     m => m.CategoryId,
-        (IEnumerable<SelectListItem>)ViewBag.Categories,
+        (IEnumerable<SelectListItem>)ViewBag.FormCategories,
         "Select Category",
-        new { @class = "form-control" })
+        new { @class = "form-control", id = "CategorySelect" })
     @Html.ValidationMessageFor(m => m.CategoryId, "", new { @class = "text-danger" })
 </div>
 
@@ -28,9 +28,9 @@
     @Html.LabelFor(m => m.SubCategoryId, "SubCategory")
     @Html.DropDownListFor(
         m => m.SubCategoryId,
-        (IEnumerable<SelectListItem>)ViewBag.SubCategories,
+        (IEnumerable<SelectListItem>)ViewBag.FormSubCategories,
         "Select SubCategory",
-        new { @class = "form-control" })
+        new { @class = "form-control", id = "SubCategorySelect" })
     @Html.ValidationMessageFor(m => m.SubCategoryId, "", new { @class = "text-danger" })
 </div>
 
