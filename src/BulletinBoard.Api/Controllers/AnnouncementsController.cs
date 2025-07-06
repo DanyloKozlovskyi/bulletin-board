@@ -34,7 +34,7 @@ public class AnnouncementsController : ControllerBase
 	public async Task<ActionResult> Create([FromBody] AnnouncementCreateModel model)
 	{
 		var newId = await _service.CreateAsync(model);
-		return CreatedAtAction(nameof(GetById), new { id = newId }, null);
+		return CreatedAtAction(nameof(GetById), new { id = newId }, newId);
 	}
 
 	[HttpPut("{id:guid}")]

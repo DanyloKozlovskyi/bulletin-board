@@ -45,6 +45,8 @@ public class AnnouncementsController : Controller
 			SubCategoryId = subCategoryId
 		};
 
+		await PopulateFormListsAsync();
+
 		return View(vm);
 	}
 
@@ -55,15 +57,37 @@ public class AnnouncementsController : Controller
 		return View(vm);
 	}
 
+	private async Task PopulateFormListsAsync(int? categoryId = null)
+	{
+		var cats = await _categoryService.GetAllAsync();
+		ViewBag.FormCategories = cats
+			.Select(c => new SelectListItem(c.Name, c.Id.ToString()))
+			.ToList();
+
+		var subs = categoryId.HasValue
+			? await _subCategoryService.GetAllAsync(categoryId)
+			: new List<SubCategory>();
+		ViewBag.FormSubCategories = subs
+			.Select(s => new SelectListItem(s.Name, s.Id.ToString()))
+			.ToList();
+	}
+
 	[HttpGet]
-	public IActionResult Create() => View(new AnnouncementCreateModel());
+	public async Task<IActionResult> Create()
+	{
+		await PopulateFormListsAsync();
+		return View(new AnnouncementCreateModel());
+	}
 
 	[HttpPost]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Create(AnnouncementCreateModel m)
 	{
-		if (!ModelState.IsValid) return View(m);
-
+		if (!ModelState.IsValid)
+		{
+			await PopulateFormListsAsync(m.CategoryId);
+			return View(m);
+		}
 		await _service.CreateAsync(m);
 		return RedirectToAction(nameof(Index));
 	}
@@ -72,10 +96,10 @@ public class AnnouncementsController : Controller
 	public async Task<IActionResult> Edit(Guid id)
 	{
 		var existing = await _service.GetByIdAsync(id);
-		if (existing == null) return NotFound();
+		if (existing is null) return NotFound();
 
 		var vm = existing.ToUpdateModel();
-
+		await PopulateFormListsAsync(vm.CategoryId);
 		return View(vm);
 	}
 
@@ -83,8 +107,11 @@ public class AnnouncementsController : Controller
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> Edit(AnnouncementUpdateModel m)
 	{
-		if (!ModelState.IsValid) return View(m);
-
+		if (!ModelState.IsValid)
+		{
+			await PopulateFormListsAsync(m.CategoryId);
+			return View(m);
+		}
 		await _service.UpdateAsync(m);
 		return RedirectToAction(nameof(Index));
 	}
