@@ -96,10 +96,6 @@
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Announcement</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
                 <!-- Content will be loaded via AJAX -->
             </div>
@@ -191,5 +187,130 @@
           validate();
         });
     </script>
+    <script>
+        // 1. Grab the modal element
+        var editModalEl = document.getElementById('editModal');
+
+        // 2. On show, load the partial then initialize the form
+        editModalEl.addEventListener('show.bs.modal', function (event) {
+          var url       = event.relatedTarget.getAttribute('data-url');
+          var modalBody = editModalEl.querySelector('.modal-body');
+
+          fetch(url)
+            .then(r => r.ok ? r.text() : Promise.reject(r))
+            .then(html => {
+              modalBody.innerHTML = html;
+              initEditForm();       // <— call our setup function here
+            })
+            .catch(err => console.error(err));
+        });
+
+        // 3. Define that setup function
+        function initEditForm() {
+          // scope to the form that just got injected
+          var form     = editModalEl.querySelector('form');
+          if (!form) return;
+
+          var btn      = form.querySelector('button[type="submit"]');
+          var titleEl  = form.querySelector('[name="Title"]');
+          var descEl   = form.querySelector('[name="Description"]');
+          var catEl    = form.querySelector('[name="CategoryId"]');
+          var subEl    = form.querySelector('[name="SubCategoryId"]');
+
+          if (!btn || !titleEl || !descEl || !catEl || !subEl) {
+            console.error('Edit form init failed', { btn, titleEl, descEl, catEl, subEl });
+            return;
+          }
+
+          function validate() {
+            var okTitle = titleEl.value.trim().length > 0;
+            var okDesc  = descEl.value.trim().length  > 0;
+            var okCat   = !!catEl.value;
+            var okSub   = !!subEl.value;
+            btn.disabled = !(okTitle && okDesc && okCat && okSub);
+          }
+
+          titleEl .addEventListener('input',  validate);
+          descEl  .addEventListener('input',  validate);
+          catEl   .addEventListener('change', validate);
+          subEl   .addEventListener('change',validate);
+
+          validate();
+        }
+    </script>
+    <script>
+        (function() {
+          var editModalEl = document.getElementById('editModal');
+
+          editModalEl.addEventListener('shown.bs.modal', function (event) {
+            // 1️⃣ Load the form via AJAX
+            var url       = event.relatedTarget.getAttribute('data-url');
+            var modalBody = editModalEl.querySelector('.modal-body');
+
+            fetch(url)
+              .then(r => r.ok ? r.text() : Promise.reject(r))
+              .then(html => {
+                modalBody.innerHTML = html;
+
+                // 2️⃣ Grab references *inside* the injected form
+                var btn      = modalBody.querySelector('#editAnnouncementFormBtn');
+                var titleEl  = modalBody.querySelector('#Title');
+                var descEl   = modalBody.querySelector('#Description');
+                var catEl    = modalBody.querySelector('#CategorySelect');
+                var subEl    = modalBody.querySelector('#SubCategorySelect');
+                var baseUrl  = '@Url.Action("GetByCategory", "SubCategoriesApi")';
+
+                if (!btn || !titleEl || !descEl || !catEl || !subEl) {
+                  console.error('Edit form wiring failed: missing elements');
+                  return;
+                }
+
+                // 3️⃣ Rebuild subcategories when needed
+                function rebuild(catId) {
+                  subEl.innerHTML = '';
+                  subEl.add(new Option('-- Select a SubCategory --', ''));
+                  if (!catId) {
+                    subEl.disabled = true;
+                    return;
+                  }
+                  subEl.disabled = false;
+                  fetch(`${baseUrl}?categoryId=${encodeURIComponent(catId)}`)
+                    .then(r => r.ok ? r.json() : Promise.reject(r))
+                    .then(list => {
+                      list.forEach(s => {
+                        var val  = s.id   ?? s.Id;
+                        var txt  = s.name ?? s.Name;
+                        subEl.add(new Option(txt, val));
+                      });
+                    })
+                    .catch(e => console.error('Failed to load subcategories:', e));
+                }
+
+                // 4️⃣ Validate form fields & enable/disable the Save button
+                function validate() {
+                  var okTitle  = titleEl.value.trim().length > 0;
+                  var okDesc   = descEl.value.trim().length  > 0;
+                  var okCat    = !!catEl.value;
+                  var okSub    = !!subEl.value;
+                  btn.disabled = !(okTitle && okDesc && okCat && okSub);
+                }
+
+                // 5️⃣ Wire up events
+                titleEl.addEventListener('input',  validate);
+                descEl .addEventListener('input',  validate);
+                catEl  .addEventListener('change', function() {
+                  rebuild(this.value);
+                  validate();
+                });
+                subEl  .addEventListener('change', validate);
+
+                validate();
+              })
+              .catch(err => console.error('Failed to load Edit form:', err));
+          });
+        })();
+    </script>
+
+
 }
 
