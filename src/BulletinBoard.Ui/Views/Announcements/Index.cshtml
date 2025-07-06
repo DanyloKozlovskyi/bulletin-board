@@ -11,7 +11,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <!-- Button to trigger Create Modal -->
-<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal">
+<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal" data-url="@Url.Action("Create")">
     Create New Announcement
 </button>
 
@@ -75,19 +75,8 @@
 <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="createModalLabel">Create Announcement</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
             <div class="modal-body">
-                <form asp-action="Create" method="post">
-                    @Html.AntiForgeryToken()
-                    @await Html.PartialAsync("_AnnouncementForm", new AnnouncementCreateModel())
-                    <div class="mt-3 text-end">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" id="createAnnouncementFormBtn" class="btn btn-primary" disabled>Create</button>
-                    </div>
-                </form>
+                <!-- Content will be loaded via AJAX -->
             </div>
         </div>
     </div>
@@ -105,155 +94,36 @@
 
 @section Scripts {
     <script>
-        // Load Edit form into modal body when opened (Bootstrap 5)
-        var editModalEl = document.getElementById('editModal');
-        editModalEl.addEventListener('show.bs.modal', function (event) {
+        // Load Create form into modal body when opened
+        function onModalShowFetchContent(containerId) {
+            var modalEl = document.getElementById(containerId);
+            modalEl.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
             var url = button.getAttribute('data-url');
-            var modalBody = editModalEl.querySelector('.modal-body');
+            var modalBody = modalEl.querySelector('.modal-body');
             fetch(url)
                 .then(response => response.text())
                 .then(html => modalBody.innerHTML = html);
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          console.log('index script executed');
-          var categorySelect    = document.getElementById('CategorySelect');
-          var subCategorySelect = document.getElementById('SubCategorySelect');
-          var subcatsBaseUrl    = '@Url.Action("GetByCategory", "SubCategoriesApi")';
-
-          // A reusable function that (re)builds the subcategory dropdown
-          function rebuildSubcats(catId) {
-            // clear & add the placeholder
-            subCategorySelect.innerHTML = '';
-            subCategorySelect.add(new Option('-- Select a SubCategory --', ''));
-
-            if (!catId) {
-              // no real category chosen → stay disabled
-              subCategorySelect.disabled = true;
-              return;
-            }
-
-            // enable & fetch real subcategories
-            subCategorySelect.disabled = false;
-            fetch(`${subcatsBaseUrl}?categoryId=${encodeURIComponent(catId)}`)
-              .then(resp => resp.ok ? resp.json() : Promise.reject(resp))
-              .then(list => {
-                list.forEach(s => {
-                  var val  = s.id   ?? s.Id;
-                  var text = s.name ?? s.Name;
-                  subCategorySelect.add(new Option(text, val));
-                });
-              })
-              .catch(err => console.error('Failed to load subcategories:', err));
-          }
-
-          rebuildSubcats(categorySelect.value);
-
-          categorySelect.addEventListener('change', function() {
-            rebuildSubcats(this.value);
-          });
-        });
-    </script>
-    <script>
-        var createModalEl = document.getElementById('createModal');
-        createModalEl.addEventListener('shown.bs.modal', function() {
-          // grab references
-          var btn       = document.getElementById('createAnnouncementFormBtn');
-          var titleEl   = document.getElementById('Title');
-          var descEl    = document.getElementById('Description');
-          var catEl     = document.getElementById('CategorySelect');
-          var subcatEl  = document.getElementById('SubCategorySelect');
-
-          function validate() {
-            // trim to avoid only-spaces
-            var hasTitle   = titleEl.value.trim().length > 0;
-            var hasDesc    = descEl.value.trim().length > 0;
-            var hasCat     = catEl.value && catEl.value !== '';
-            var hasSubcat  = subcatEl.value && subcatEl.value !== '';
-
-            btn.disabled = !(hasTitle && hasDesc && hasCat && hasSubcat);
-          }
-          console.log('create script executed');
-
-          // wire up events
-          titleEl.addEventListener('input',  validate);
-          descEl.addEventListener('input',   validate);
-          catEl.addEventListener('change',    validate);
-          subcatEl.addEventListener('change', validate);
-
-          // initial check
-          validate();
-        });
-    </script>
-    <script>
-        // 1. Grab the modal element
-        var editModalEl = document.getElementById('editModal');
-
-        // 2. On show, load the partial then initialize the form
-        editModalEl.addEventListener('show.bs.modal', function (event) {
-          var url       = event.relatedTarget.getAttribute('data-url');
-          var modalBody = editModalEl.querySelector('.modal-body');
-
-          fetch(url)
-            .then(r => r.ok ? r.text() : Promise.reject(r))
-            .then(html => {
-              modalBody.innerHTML = html;
-              initEditForm();       // <— call our setup function here
-            })
-            .catch(err => console.error(err));
-        });
-
-        // 3. Define that setup function
-        function initEditForm() {
-          // scope to the form that just got injected
-          var form     = editModalEl.querySelector('form');
-          if (!form) return;
-
-          var btn      = form.querySelector('button[type="submit"]');
-          var titleEl  = form.querySelector('[name="Title"]');
-          var descEl   = form.querySelector('[name="Description"]');
-          var catEl    = form.querySelector('[name="CategoryId"]');
-          var subEl    = form.querySelector('[name="SubCategoryId"]');
-
-          if (!btn || !titleEl || !descEl || !catEl || !subEl) {
-            console.error('Edit form init failed', { btn, titleEl, descEl, catEl, subEl });
-            return;
-          }
-
-          function validate() {
-            var okTitle = titleEl.value.trim().length > 0;
-            var okDesc  = descEl.value.trim().length  > 0;
-            var okCat   = !!catEl.value;
-            var okSub   = !!subEl.value;
-            btn.disabled = !(okTitle && okDesc && okCat && okSub);
-          }
-
-          titleEl .addEventListener('input',  validate);
-          descEl  .addEventListener('input',  validate);
-          catEl   .addEventListener('change', validate);
-          subEl   .addEventListener('change',validate);
-
-          validate();
+            });
         }
+        onModalShowFetchContent('createModal');
+        onModalShowFetchContent('editModal');
     </script>
     <script>
-        (function() {
-          var editModalEl = document.getElementById('editModal');
+        function initializeAnnouncementModal(modalId, buttonSelector) {
+          var modalEl = document.getElementById(modalId);
 
-          editModalEl.addEventListener('shown.bs.modal', function (event) {
-            // 1️⃣ Load the form via AJAX
+          modalEl.addEventListener('shown.bs.modal', function (event) {
+
             var url       = event.relatedTarget.getAttribute('data-url');
-            var modalBody = editModalEl.querySelector('.modal-body');
+            var modalBody = modalEl.querySelector('.modal-body');
 
             fetch(url)
               .then(r => r.ok ? r.text() : Promise.reject(r))
               .then(html => {
                 modalBody.innerHTML = html;
 
-                // 2️⃣ Grab references *inside* the injected form
-                var btn      = modalBody.querySelector('#editAnnouncementFormBtn');
+                var btn      = modalBody.querySelector(buttonSelector);
                 var titleEl  = modalBody.querySelector('#Title');
                 var descEl   = modalBody.querySelector('#Description');
                 var catEl    = modalBody.querySelector('#CategorySelect');
@@ -265,7 +135,6 @@
                   return;
                 }
 
-                // 3️⃣ Rebuild subcategories when needed
                 function rebuild(catId) {
                   subEl.innerHTML = '';
                   subEl.add(new Option('-- Select a SubCategory --', ''));
@@ -286,7 +155,6 @@
                     .catch(e => console.error('Failed to load subcategories:', e));
                 }
 
-                // 4️⃣ Validate form fields & enable/disable the Save button
                 function validate() {
                   var okTitle  = titleEl.value.trim().length > 0;
                   var okDesc   = descEl.value.trim().length  > 0;
@@ -295,7 +163,6 @@
                   btn.disabled = !(okTitle && okDesc && okCat && okSub);
                 }
 
-                // 5️⃣ Wire up events
                 titleEl.addEventListener('input',  validate);
                 descEl .addEventListener('input',  validate);
                 catEl  .addEventListener('change', function() {
@@ -308,7 +175,10 @@
               })
               .catch(err => console.error('Failed to load Edit form:', err));
           });
-        })();
+        };
+
+        initializeAnnouncementModal('editModal', '#editAnnouncementFormBtn');
+        initializeAnnouncementModal('createModal', '#createAnnouncementFormBtn');
     </script>
 
 
