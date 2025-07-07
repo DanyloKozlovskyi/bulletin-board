@@ -65,7 +65,17 @@
                             data-url="@Url.Action("Edit", new { id = a.Id })">
                         Edit
                     </button>
-                    <a asp-action="Delete" asp-route-id="@a.Id" class="btn btn-sm btn-danger">Delete</a>
+                    <form asp-action="Delete"
+                          asp-route-id="@a.Id"
+                          method="post"
+                          class="d-inline"
+                          onsubmit="return confirm('Really delete @a.Title?');">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Delete
+                        </button>
+                    </form>
+
                 </td>
             </tr>
         }
