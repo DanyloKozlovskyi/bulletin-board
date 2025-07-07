@@ -1,0 +1,6 @@
+﻿.announcementsToolbar {
+    display: flex;
+    align-items: center;
+    gap: 20%;
+    margin-bottom: 1rem; /* matches mb-3 */
+}

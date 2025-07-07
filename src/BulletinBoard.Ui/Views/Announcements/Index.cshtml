@@ -8,34 +8,14 @@
     ViewBag.SubCategories = Model.SubCategories;
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/announcements.css" asp-append-version="true" />
+}
+
 <h1>@ViewData["Title"]</h1>
 
 <!-- Button to trigger Create Modal -->
-<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal" data-url="@Url.Action("Create")">
-    Create New Announcement
-</button>
-
-<form asp-action="Index" method="get" class="form-inline mb-3">
-    <div class="form-group mr-2">
-        <label asp-for="CategoryId" class="mr-1">Category</label>
-        <select asp-for="CategoryId"
-                asp-items="Model.Categories"
-                asp-option-label="All Categories"
-                class="form-control"
-                onchange="this.form.submit()">
-        </select>
-    </div>
-    <div class="form-group mr-2">
-        <label asp-for="SubCategoryId" class="mr-1">SubCategory</label>
-        <select asp-for="SubCategoryId"
-                asp-items="Model.SubCategories"
-                asp-option-label="All SubCategories"
-                class="form-control"
-                onchange="this.form.submit()">
-        </select>
-
-    </div>
-</form>
+@await Html.PartialAsync("_AnnouncementsToolbar", Model)
 
 <table class="table table-striped">
     <thead>
@@ -54,7 +34,7 @@
                 <td>@a.Title</td>
                 <td>@a.CategoryName</td>
                 <td>@a.SubCategoryName</td>
-                <td>@a.CreatedDate:yyyy-MM-dd</td>
+                <td>@a.CreatedDate</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-info">View</a>
                     <!-- Trigger Edit Modal -->
@@ -125,7 +105,7 @@
 
           modalEl.addEventListener('shown.bs.modal', function (event) {
 
-            var url       = event.relatedTarget.getAttribute('data-url');
+            var url = event.relatedTarget.getAttribute('data-url');
             var modalBody = modalEl.querySelector('.modal-body');
 
             fetch(url)
@@ -133,12 +113,12 @@
               .then(html => {
                 modalBody.innerHTML = html;
 
-                var btn      = modalBody.querySelector(buttonSelector);
-                var titleEl  = modalBody.querySelector('#Title');
-                var descEl   = modalBody.querySelector('#Description');
-                var catEl    = modalBody.querySelector('#CategorySelect');
-                var subEl    = modalBody.querySelector('#SubCategorySelect');
-                var baseUrl  = '@Url.Action("GetByCategory", "SubCategoriesApi")';
+                var btn = modalBody.querySelector(buttonSelector);
+                var titleEl = modalBody.querySelector('#Title');
+                var descEl = modalBody.querySelector('#Description');
+                var catEl = modalBody.querySelector('#CategorySelect');
+                var subEl = modalBody.querySelector('#SubCategorySelect');
+                var baseUrl = '@Url.Action("GetByCategory", "SubCategoriesApi")';
 
                 if (!btn || !titleEl || !descEl || !catEl || !subEl) {
                   console.error('Edit form wiring failed: missing elements');
@@ -166,20 +146,20 @@
                 }
 
                 function validate() {
-                  var okTitle  = titleEl.value.trim().length > 0;
-                  var okDesc   = descEl.value.trim().length  > 0;
-                  var okCat    = !!catEl.value;
-                  var okSub    = !!subEl.value;
+                  var okTitle = titleEl.value.trim().length > 0;
+                  var okDesc = descEl.value.trim().length  > 0;
+                  var okCat = !!catEl.value;
+                  var okSub = !!subEl.value;
                   btn.disabled = !(okTitle && okDesc && okCat && okSub);
                 }
 
                 titleEl.addEventListener('input',  validate);
-                descEl .addEventListener('input',  validate);
-                catEl  .addEventListener('change', function() {
+                descEl.addEventListener('input',  validate);
+                catEl.addEventListener('change', function() {
                   rebuild(this.value);
                   validate();
                 });
-                subEl  .addEventListener('change', validate);
+                subEl.addEventListener('change', validate);
 
                 validate();
               })
