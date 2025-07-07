@@ -15,45 +15,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <!-- Button to trigger Create Modal -->
-<form asp-action="Index"
-      method="get"
-      class="d-flex align-items-center mb-3"
-      style="gap: 20%;">
-
-    <button type="button"
-            class="btn btn-success btn-sm"
-			data-bs-toggle="modal"
-            data-bs-target="#createModal"
-            data-url="@Url.Action("Create")">
-            
-        Create New Announcement
-    </button>
-
-    <div class="d-flex align-items-center">
-        <label asp-for="CategoryId" class="form-label mb-0 me-2">Category</label>
-        <select asp-for="CategoryId"
-                asp-items="Model.Categories"
-                asp-option-label="All Categories"
-                class="form-select form-select-sm w-auto"
-                onchange="this.form.submit()">
-        </select>
-    </div>
-
-    <div class="d-flex align-items-center">
-        <label asp-for="SubCategoryId" class="form-label mb-0 me-2">SubCategory</label>
-        <select asp-for="SubCategoryId"
-                asp-items="Model.SubCategories"
-                asp-option-label="All SubCategories"
-                class="form-select form-select-sm w-auto"
-                onchange="this.form.submit()">
-        </select>
-    </div>
-
-</form>
-
-
-
-
+@await Html.PartialAsync("_AnnouncementsToolbar", Model)
 
 <table class="table table-striped">
     <thead>
@@ -143,7 +105,7 @@
 
           modalEl.addEventListener('shown.bs.modal', function (event) {
 
-            var url       = event.relatedTarget.getAttribute('data-url');
+            var url = event.relatedTarget.getAttribute('data-url');
             var modalBody = modalEl.querySelector('.modal-body');
 
             fetch(url)
@@ -151,12 +113,12 @@
               .then(html => {
                 modalBody.innerHTML = html;
 
-                var btn      = modalBody.querySelector(buttonSelector);
-                var titleEl  = modalBody.querySelector('#Title');
-                var descEl   = modalBody.querySelector('#Description');
-                var catEl    = modalBody.querySelector('#CategorySelect');
-                var subEl    = modalBody.querySelector('#SubCategorySelect');
-                var baseUrl  = '@Url.Action("GetByCategory", "SubCategoriesApi")';
+                var btn = modalBody.querySelector(buttonSelector);
+                var titleEl = modalBody.querySelector('#Title');
+                var descEl = modalBody.querySelector('#Description');
+                var catEl = modalBody.querySelector('#CategorySelect');
+                var subEl = modalBody.querySelector('#SubCategorySelect');
+                var baseUrl = '@Url.Action("GetByCategory", "SubCategoriesApi")';
 
                 if (!btn || !titleEl || !descEl || !catEl || !subEl) {
                   console.error('Edit form wiring failed: missing elements');
@@ -184,20 +146,20 @@
                 }
 
                 function validate() {
-                  var okTitle  = titleEl.value.trim().length > 0;
-                  var okDesc   = descEl.value.trim().length  > 0;
-                  var okCat    = !!catEl.value;
-                  var okSub    = !!subEl.value;
+                  var okTitle = titleEl.value.trim().length > 0;
+                  var okDesc = descEl.value.trim().length  > 0;
+                  var okCat = !!catEl.value;
+                  var okSub = !!subEl.value;
                   btn.disabled = !(okTitle && okDesc && okCat && okSub);
                 }
 
                 titleEl.addEventListener('input',  validate);
-                descEl .addEventListener('input',  validate);
-                catEl  .addEventListener('change', function() {
+                descEl.addEventListener('input',  validate);
+                catEl.addEventListener('change', function() {
                   rebuild(this.value);
                   validate();
                 });
-                subEl  .addEventListener('change', validate);
+                subEl.addEventListener('change', validate);
 
                 validate();
               })
