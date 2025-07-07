@@ -8,34 +8,52 @@
     ViewBag.SubCategories = Model.SubCategories;
 }
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/announcements.css" asp-append-version="true" />
+}
+
 <h1>@ViewData["Title"]</h1>
 
 <!-- Button to trigger Create Modal -->
-<button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#createModal" data-url="@Url.Action("Create")">
-    Create New Announcement
-</button>
+<form asp-action="Index"
+      method="get"
+      class="d-flex align-items-center mb-3"
+      style="gap: 20%;">
 
-<form asp-action="Index" method="get" class="form-inline mb-3">
-    <div class="form-group mr-2">
-        <label asp-for="CategoryId" class="mr-1">Category</label>
+    <button type="button"
+            class="btn btn-success btn-sm"
+			data-bs-toggle="modal"
+            data-bs-target="#createModal"
+            data-url="@Url.Action("Create")">
+            
+        Create New Announcement
+    </button>
+
+    <div class="d-flex align-items-center">
+        <label asp-for="CategoryId" class="form-label mb-0 me-2">Category</label>
         <select asp-for="CategoryId"
                 asp-items="Model.Categories"
                 asp-option-label="All Categories"
-                class="form-control"
+                class="form-select form-select-sm w-auto"
                 onchange="this.form.submit()">
         </select>
     </div>
-    <div class="form-group mr-2">
-        <label asp-for="SubCategoryId" class="mr-1">SubCategory</label>
+
+    <div class="d-flex align-items-center">
+        <label asp-for="SubCategoryId" class="form-label mb-0 me-2">SubCategory</label>
         <select asp-for="SubCategoryId"
                 asp-items="Model.SubCategories"
                 asp-option-label="All SubCategories"
-                class="form-control"
+                class="form-select form-select-sm w-auto"
                 onchange="this.form.submit()">
         </select>
-
     </div>
+
 </form>
+
+
+
+
 
 <table class="table table-striped">
     <thead>
