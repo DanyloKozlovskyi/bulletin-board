@@ -1,0 +1,52 @@
+﻿@model Announcement
+
+@{
+    ViewData["Title"] = "Announcement Details";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <dl class="row">
+      <dt class="col-sm-3">Title</dt>
+      <dd class="col-sm-9">@Model.Title</dd>
+
+      <dt class="col-sm-3">Description</dt>
+      <dd class="col-sm-9">@Model.Description</dd>
+
+      <dt class="col-sm-3">Created Date</dt>
+      <dd class="col-sm-9">@Model.CreatedDate.ToString("yyyy-MM-dd")</dd>
+
+      <dt class="col-sm-3">Status</dt>
+      <dd class="col-sm-9">
+        @if (Model.Status) {
+          <span class="badge bg-success">Active</span>
+        } else {
+          <span class="badge bg-secondary">Inactive</span>
+        }
+      </dd>
+
+      <dt class="col-sm-3">Category</dt>
+      <dd class="col-sm-9">@Model.CategoryName</dd>
+
+      <dt class="col-sm-3">SubCategory</dt>
+      <dd class="col-sm-9">
+                @if (Model.SubCategoryId.HasValue)
+                {
+                    @($"{Model.SubCategoryName}")
+                }
+                else
+                {
+                    <em>— none —</em>
+                }
+            </dd>
+    </dl>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+      ← Back to List
+    </a>
+  </div>
+</div>
+
