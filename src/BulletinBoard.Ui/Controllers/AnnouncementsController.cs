@@ -116,14 +116,6 @@ public class AnnouncementsController : Controller
 		return RedirectToAction(nameof(Index));
 	}
 
-	[HttpGet]
-	public async Task<IActionResult> Delete(Guid id)
-	{
-		var vm = await _service.GetByIdAsync(id);
-		if (vm == null) return NotFound();
-		return View(vm);
-	}
-
 	[HttpPost, ActionName("Delete")]
 	[ValidateAntiForgeryToken]
 	public async Task<IActionResult> DeleteConfirmed(Guid id)
