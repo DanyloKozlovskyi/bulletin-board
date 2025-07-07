@@ -10,6 +10,6 @@ public class Announcement
 	public int CategoryId { get; set; }
 	public int? SubCategoryId { get; set; }
 
-	public Category Category { get; set; }
-	public SubCategory SubCategory { get; set; }
+	public string CategoryName { get; set; }
+	public string SubCategoryName { get; set; }
 }
