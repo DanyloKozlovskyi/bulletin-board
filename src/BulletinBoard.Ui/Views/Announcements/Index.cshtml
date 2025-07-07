@@ -36,26 +36,38 @@
                 <td>@a.SubCategoryName</td>
                 <td>@a.CreatedDate</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-info">View</a>
-                    <!-- Trigger Edit Modal -->
-                    <button type="button"
-                            class="btn btn-sm btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#editModal"
-                            data-url="@Url.Action("Edit", new { id = a.Id })">
-                        Edit
-                    </button>
-                    <form asp-action="Delete"
-                          asp-route-id="@a.Id"
-                          method="post"
-                          class="d-inline"
-                          onsubmit="return confirm('Really delete @a.Title?');">
-                        @Html.AntiForgeryToken()
-                        <button type="submit" class="btn btn-sm btn-danger">
-                            Delete
-                        </button>
-                    </form>
+                    <div class="btn-action-group" role="group" aria-label="Row actions">
+                        <a asp-action="Details" asp-route-id="@a.Id"
+                           class="btn btn-outline-info btn-sm"
+                           data-bs-toggle="tooltip"
+                           title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
 
+                        <button type="button"
+                                class="btn btn-outline-primary btn-sm"
+                                data-bs-toggle="tooltip"
+                                title="Edit"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editModal"
+                                data-url="@Url.Action("Edit", new { id = a.Id })">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+
+                        <form asp-action="Delete"
+                              asp-route-id="@a.Id"
+                              method="post"
+                              onsubmit="return confirm('Really delete “@a.Title”?');"
+                              class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-outline-danger btn-sm"
+                                    data-bs-toggle="tooltip"
+                                    title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }
@@ -170,7 +182,14 @@
         initializeAnnouncementModal('editModal', '#editAnnouncementFormBtn');
         initializeAnnouncementModal('createModal', '#createAnnouncementFormBtn');
     </script>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var triggers = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+          triggers.forEach(function(el) {
+            new bootstrap.Tooltip(el);
+          });
+        });
+    </script>
 
 }
 

@@ -4,3 +4,23 @@
     gap: 20%;
     margin-bottom: 1rem; /* matches mb-3 */
 }
+
+.announcementsToolbar button {
+    min-width: 2.5rem;
+}
+
+/* a little “action bar” helper */
+.btn-action-group {
+    display: inline-flex;
+    gap: 0.5rem;
+}
+
+    /* make each icon button square and centered */
+    .btn-action-group .btn {
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        display: grid;
+        place-content: center;
+    }
+
