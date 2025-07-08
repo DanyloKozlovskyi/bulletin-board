@@ -1,4 +1,4 @@
-name: Build and deploy BulletinBoard.Api to Azure Web App - MyApiApp
+name: Build and deploy BulletinBoard.Api to Azure
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET 9
+      - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9.0"
@@ -23,17 +23,17 @@ jobs:
       - name: Restore API dependencies
         run: dotnet restore src/BulletinBoard.Api/BulletinBoard.Api.csproj
 
-      - name: Build API project
+      - name: Build API
         run: dotnet build src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release
 
-      - name: Publish API to myapp
-        run: dotnet publish src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release -o ${{ env.DOTNET_ROOT }}/myapp
+      - name: Publish API
+        run: dotnet publish src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release -o ./myapp
 
-      - name: Upload artifact for deployment job
+      - name: Upload published API
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{ env.DOTNET_ROOT }}/myapp
+          name: api-artifact
+          path: ./myapp
 
   deploy:
     runs-on: ubuntu-latest
@@ -43,21 +43,21 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download published API
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
+          name: api-artifact
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_FBBDE535C83F4C1988E7DBF7A4146F37 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5A60002B1BEB4B52AC3FC283336E195F }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_ED6037D2BE704A559B3FD913D1003BA7 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
-      - name: Deploy to Azure Web App
+      - name: Deploy to MyApiApp
         uses: azure/webapps-deploy@v3
         with:
           app-name: "MyApiApp"
           slot-name: "Production"
-          package: ${{ env.DOTNET_ROOT }}/myapp
+          package: "./myapp"
