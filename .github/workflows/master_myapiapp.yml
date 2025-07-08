@@ -26,10 +26,16 @@ jobs:
       - name: Build API
         run: dotnet build src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release
 
-      - name: Publish API
-        run: dotnet publish src/BulletinBoard.Api/BulletinBoard.Api.csproj \
-              -c Release \
-              -o ./myapp
+      # Option A: proper multiline with no trailing spaces after each “\”
+      - name: Publish API (multiline)
+        run: |
+          dotnet publish src/BulletinBoard.Api/BulletinBoard.Api.csproj \
+            -c Release \
+            -o ./myapp
+
+      # Option B: single line (simplest)
+      #- name: Publish API (single line)
+      #  run: dotnet publish src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release -o ./myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
