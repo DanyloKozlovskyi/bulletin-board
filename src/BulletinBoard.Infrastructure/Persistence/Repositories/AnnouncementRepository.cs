@@ -12,7 +12,7 @@ public class AnnouncementRepository : IAnnouncementRepository
 
 	public AnnouncementRepository(IConfiguration config)
 	{
-		_db = new SqlConnection(config.GetConnectionString("Default"));
+		_db = new SqlConnection(config.GetConnectionString("AzureConnection"));
 	}
 
 	public async Task<IEnumerable<Announcement>> ListAsync()

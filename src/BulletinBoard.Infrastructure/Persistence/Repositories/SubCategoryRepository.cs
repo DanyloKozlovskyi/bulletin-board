@@ -12,7 +12,7 @@ public class SubCategoryRepository : ISubCategoryRepository
 
 	public SubCategoryRepository(IConfiguration config)
 	{
-		_db = new SqlConnection(config.GetConnectionString("Default"));
+		_db = new SqlConnection(config.GetConnectionString("AzureConnection"));
 	}
 
 	public Task<IEnumerable<SubCategory>> ListAsync()

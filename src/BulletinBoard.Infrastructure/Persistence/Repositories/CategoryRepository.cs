@@ -11,7 +11,7 @@ public class CategoryRepository : ICategoryRepository
 	private readonly IDbConnection _db;
 
 	public CategoryRepository(IConfiguration config)
-		=> _db = new SqlConnection(config.GetConnectionString("Default"));
+		=> _db = new SqlConnection(config.GetConnectionString("AzureConnection"));
 
 	public Task<IEnumerable<Category>> ListAsync()
 		=> _db.QueryAsync<Category>(
