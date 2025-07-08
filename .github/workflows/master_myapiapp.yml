@@ -54,5 +54,4 @@ jobs:
         with:
           app-name: "MyApiApp"
           package: "./myapp"
-          slot-name: production
           remove-additional-files-flag: true
