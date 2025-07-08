@@ -2,9 +2,9 @@ name: Build & deploy BulletinBoard.Api
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - 'src/BulletinBoard.Api/**'
+      - "src/BulletinBoard.Api/**"
   # ← allow one-click/manual runs from the Actions UI
   workflow_dispatch:
 
@@ -17,7 +17,7 @@ jobs:
       - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.0'
+          dotnet-version: "9.0"
 
       - name: Restore
         run: dotnet restore src/BulletinBoard.Api/BulletinBoard.Api.csproj
@@ -38,14 +38,18 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: api-artifact
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'MyApiApp'
-          # this must match the secret you’ve stored in GitHub (Settings → Secrets)
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: './myapp'
+          app-name: "MyApiApp"
+          package: "./myapp"
