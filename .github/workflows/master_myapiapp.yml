@@ -38,12 +38,13 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download artifact
+      - name: Download artifact into ./myapp
         uses: actions/download-artifact@v4
         with:
           name: api-artifact
+          path: "./myapp" # ← unpack directly into ./myapp
 
-      - name: Login to Azure
+      - name: Login to Azure # if using SP auth
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -52,4 +53,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: "MyApiApp"
-          package: "./api-artifact/myapp"
+          package: "./myapp" # ← now this exists
+          slot-name: production
