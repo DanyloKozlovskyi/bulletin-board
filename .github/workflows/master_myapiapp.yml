@@ -4,8 +4,7 @@ on:
   push:
     branches: [master]
     paths:
-      - "src/BulletinBoard.Api/**"
-  # ← allow one-click/manual runs from the Actions UI
+      - "src/api/**"
   workflow_dispatch:
 
 jobs:
@@ -20,13 +19,13 @@ jobs:
           dotnet-version: "9.0"
 
       - name: Restore
-        run: dotnet restore src/BulletinBoard.Api/BulletinBoard.Api.csproj
+        run: dotnet restore src/api/BulletinBoard.Api.csproj
 
       - name: Build
-        run: dotnet build src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release
+        run: dotnet build src/api/BulletinBoard.Api.csproj -c Release
 
       - name: Publish
-        run: dotnet publish src/BulletinBoard.Api/BulletinBoard.Api.csproj -c Release -o ./myapp
+        run: dotnet publish src/api/BulletinBoard.Api.csproj -c Release -o ./myapp
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
