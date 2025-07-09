@@ -7,10 +7,10 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: MyMvcApp
-  AZURE_WEBAPP_PACKAGE_PATH: src/ui/bulletinboard.ui/published    # ← updated
+  AZURE_WEBAPP_PACKAGE_PATH: src/ui/BulletinBoard/published     # ← updated
   CONFIGURATION: Release
   DOTNET_CORE_VERSION: 9.0.x
-  WORKING_DIRECTORY: src/ui/bulletinboard.ui                     # ← updated
+  WORKING_DIRECTORY: src/ui/BulletinBoard                       # ← updated
 
 jobs:
   build:
@@ -23,20 +23,25 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_CORE_VERSION }}
 
+      # optional sanity-check of the folder name & casing
+      - name: List UI folder
+        run: ls -R src/ui
+
       - name: Restore
-        run: dotnet restore "${{ env.WORKING_DIRECTORY }}"
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: dotnet restore
 
       - name: Build
-        run: dotnet build "${{ env.WORKING_DIRECTORY }}" --configuration ${{ env.CONFIGURATION }} --no-restore
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: dotnet build --configuration ${{ env.CONFIGURATION }} --no-restore
 
       - name: Test
-        run: dotnet test "${{ env.WORKING_DIRECTORY }}" --no-build
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: dotnet test --no-build
 
       - name: Publish
-        run: dotnet publish "${{ env.WORKING_DIRECTORY }}" \
-          --configuration ${{ env.CONFIGURATION }} \
-          --no-build \
-          --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: dotnet publish --configuration ${{ env.CONFIGURATION }} --no-build --output "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
 
       - name: Publish Artifacts
         uses: actions/upload-artifact@v4
