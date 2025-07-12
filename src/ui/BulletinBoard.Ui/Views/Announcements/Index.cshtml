@@ -43,17 +43,16 @@
                            title="View">
                             <i class="bi bi-eye"></i>
                         </a>
-
+                        <span data-bs-toggle="tooltip" title="Edit">
                         <button type="button"
                                 class="btn btn-outline-primary btn-sm"
-                                data-bs-toggle="tooltip"
                                 title="Edit"
                                 data-bs-toggle="modal"
                                 data-bs-target="#editModal"
                                 data-url="@Url.Action("Edit", new { id = a.Id })">
                             <i class="bi bi-pencil-square"></i>
                         </button>
-
+                        </span>
                         <form asp-action="Delete"
                               asp-route-id="@a.Id"
                               method="post"
